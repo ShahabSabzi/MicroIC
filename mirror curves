@@ -1,0 +1,95 @@
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Data for In/Out motor
+in_out_degrees = np.linspace(0, 140, 100)
+in_out_voltage = np.linspace(0.1, 4.8, 100)
+drive_range = (50, 90)
+
+# Data for Up/Down motor
+up_down_degrees = np.linspace(-10, 10, 100)
+up_down_voltage = np.linspace(1.1, 3.8, 100)
+
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 3), sharey=True)
+
+# Plot In/Out motor on left
+ax1.plot(in_out_degrees, in_out_voltage, color='orange', linewidth=2, label='In/Out Voltage Range')
+ax1.axvspan(drive_range[0], drive_range[1], color='green', alpha=0.3, label='Drive Range')
+ax1.set_title('In/Out Motor Range', fontsize=14)
+ax1.set_xlabel('Degrees')
+ax1.set_ylabel('Voltage (V)')
+ax1.set_xlim(0, 140)
+ax1.set_ylim(0, 5)
+ax1.legend()
+ax1.grid(True, linestyle='--', alpha=0.5)
+
+# Plot Up/Down motor on right
+ax2.plot(up_down_degrees, up_down_voltage, color='blue', linewidth=2, label='Up/Down Voltage Range')
+ax2.set_title('Up/Down Motor Range', fontsize=14)
+ax2.set_xlabel('Degrees')
+ax2.set_xlim(-10, 10)
+ax2.legend()
+ax2.grid(True, linestyle='--', alpha=0.5)
+
+# Stick plots together by removing space between them
+plt.subplots_adjust(wspace=0.05)
+
+plt.tight_layout()
+plt.show()
+
+
+
+
+
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Data for Up/Down motor (linear - remains the same)
+up_down_degrees = np.linspace(-10, 10, 100)
+up_down_voltage = np.linspace(1.1, 3.8, 100)
+
+# Data for In/Out motor (non-linear with specified segments)
+in_out_degrees = np.linspace(0, 140, 1000)
+in_out_voltage = np.piecewise(in_out_degrees, 
+                             [in_out_degrees < 20, 
+                              (in_out_degrees >= 20) & (in_out_degrees < 35), 
+                              (in_out_degrees >= 35) & (in_out_degrees < 105),
+                              (in_out_degrees >= 105) & (in_out_degrees < 120),
+                              in_out_degrees >= 120],
+                             [lambda x: 0.1 + (0.7 - 0.1) * (x / 20),
+                              0.7,
+                              lambda x: 0.7 + (4.2 - 0.7) * ((x - 35) / (105 - 35)),
+                              4.2,
+                              lambda x: 4.2 + (4.8 - 4.2) * ((x - 120) / (140 - 120))])
+
+# Drive range for In/Out motor
+drive_range = (50, 90)
+
+# Plotting
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 3), sharey=True)
+
+# Plot In/Out motor on left
+ax1.plot(in_out_degrees, in_out_voltage, color='orange', linewidth=2, label='In/Out Voltage Range (Non-linear)')
+ax1.axvspan(drive_range[0], drive_range[1], color='green', alpha=0.3, label='Drive Range (50°-90°)')
+ax1.set_title('In/Out Motor Range (Non-linear)', fontsize=14)  # FIXED LINE
+ax1.set_xlabel('Degrees')  # FIXED LINE
+ax1.set_ylabel('Voltage (V)')  # FIXED LINE
+ax1.set_xlim(0, 140)
+ax1.set_ylim(0, 5)
+ax1.legend()
+ax1.grid(True, linestyle='--', alpha=0.5)
+
+# Plot Up/Down motor on right
+ax2.plot(up_down_degrees, up_down_voltage, color='blue', linewidth=2, label='Up/Down Voltage Range (Linear)')
+ax2.set_title('Up/Down Motor Range (Linear)', fontsize=14)
+ax2.set_xlabel('Degrees')
+ax2.set_xlim(-10, 10)
+ax2.legend()
+ax2.grid(True, linestyle='--', alpha=0.5)
+
+# Stick plots together by removing space between them
+plt.subplots_adjust(wspace=0.05)
+
+plt.tight_layout()
+plt.show()
